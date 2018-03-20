@@ -1,0 +1,10 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+show_article:
+     path: /articles/{id}
+     controller: App\Controller\ArticleController::showArticle
+
+create_article:
+     path: /articles
+     controller: App\Controller\ArticleController::createArticle
