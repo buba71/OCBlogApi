@@ -4,26 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\Tests\Serializer\SerializableClass;
 use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 
 
 class ArticleController
 {
 
-    public function showArticle(SerializerInterface $serializer)
+    public function showArticle(SerializerInterface $serializer, Article $article)
     {
-        $article = new Article();
-        $article
-            ->setTitle('Mon premier article')
-            ->setContent('Le contenu de mon article.')
-        ;
-        $data = $serializer->serialize($article, 'json');
+
+        $data = $serializer->serialize($article, 'json', SerializationContext::create()->setGroups(array('detail')));
 
         $response = new Response($data);
         $response->headers->set('Content-Type', 'application/json');
@@ -45,5 +38,18 @@ class ArticleController
             return new Response('', Response::HTTP_CREATED);
         }
     }
+
+    public function listArticle(SerializerInterface $serializer, EntityManagerInterface $entityManager)
+    {
+        $listArticles = $entityManager->getRepository(Article::class)->findAll();
+        $data = $serializer->serialize($listArticles, 'json', SerializationContext::create()->setGroups(array('list')));
+
+        $response = new Response($data);
+        $response->headers->set('Content-Type', 'application/Json');
+
+        return $response;
+    }
+
+
 
 }
